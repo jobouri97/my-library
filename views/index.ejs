@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Books</title>
+    <link rel="stylesheet" href="/styles/styles.css">
+</head>
+
+<body>
+    <%- include("partials/header") %>
+        <div class="sort-buttons">
+            <a href="/?sort=recent" class="<%= sort === 'recent' ? 'active' : '' %>">Recent</a>
+            <a href="/?sort=rating" class="<%= sort === 'rating' ? 'active' : '' %>">Rating</a>
+            <a href="/?sort=title" class="<%= sort === 'title' ? 'active' : '' %>">A-Z</a>
+        </div>
+        <div class="books-container">
+            <% books.forEach(book=> { %>
+                <div class="book-card">
+
+                    <img class="book-cover" src="https://covers.openlibrary.org/b/id/<%= book.cover_id %>-M.jpg"
+                        alt="<%= book.title %> cover">
+
+                    <div class="book-title">
+                        <h2>
+                            <%= book.title %>
+                        </h2>
+                    </div>
+
+                    <p class="book-author">
+                        <%= book.author %>
+                    </p>
+
+                    <div class="book-rating">
+                        <% for (let i=1; i <=5; i++) { %>
+                            <form action="/rate/<%= book.id %>" method="POST">
+                                <input type="hidden" name="rating" value="<%= i %>">
+
+                                <button type="submit" class="star-btn">
+                                    <%= i <=book.rating ? "⭐" : "☆" %>
+                                </button>
+                            </form>
+                            <% } %>
+                    </div>
+
+                    <div class="book-actions">
+                        <a href="/comments/<%= book.id %>" class="comment-btn">
+                            💬 Comments
+                        </a>
+
+                        <form action="/delete/<%= book.id %>" method="post">
+                            <button class="delete-btn">
+                                🗑 Delete
+                            </button>
+                        </form>
+                    </div>
+
+                </div>
+                <% }) %>
+        </div>
+        <%- include("partials/footer") %>
+
+</body>
+
+</html>

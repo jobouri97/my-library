@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Notes</title>
+    <link rel="stylesheet" href="/styles/header.css">
+</head>
+
+<body>
+
+    <nav>
+        <a href="/">📚 Book Notes</a>
+        <div>
+            <a href="/" class="<%= currentPage === 'books' ? 'active' : '' %>">
+                My Books
+            </a>
+
+            <a href="/new" class="<%= currentPage === 'new' ? 'active' : '' %>">
+                New Book
+            </a>
+        </div>
+    </nav>
+</body>

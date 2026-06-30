@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comments</title>
+    <link rel="stylesheet" href="/styles/comments.css">
+</head>
+
+<body>
+    <a class="back-link" href="/">← Back</a>
+
+    <main class="comments-page">
+        <section class="book-info">
+            <img src="https://covers.openlibrary.org/b/id/<%= book.cover_id %>-M.jpg" alt="<%= book.title %>">
+
+            <div>
+                <h1>
+                    <%= book.title %>
+                </h1>
+                <h3>
+                    <%= book.author %>
+                </h3>
+            </div>
+        </section>
+
+        <section class="comments-list">
+            <% comments.forEach(comment=> { %>
+                <div class="comment-card">
+                    <form class="comment-edit-form" action="/comments/<%= comment.id %>/edit" method="post">
+                        <input type="hidden" name="bookId" value="<%= book.id %>">
+
+                        <textarea id="input<%= comment.id %>" name="content" disabled
+                            required><%= comment.comment %></textarea>
+
+                        <div class="comment-buttons">
+                            <button class="edit-btn" id="edit<%= comment.id %>" type="button"
+                                onclick="enableEdit(<%= comment.id %>)">
+                                ✏️ Edit
+                            </button>
+
+                            <button class="done-btn" id="done<%= comment.id %>" type="submit" hidden>
+                                ✅ Save
+                            </button>
+
+                            <button class="delete-btn" type="submit" formaction="/comments/<%= comment.id %>/delete"
+                                formmethod="post">
+                                🗑️ Delete
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <% }) %>
+        </section>
+
+        <form action="/books/<%= book.id %>/comments" method="post" class="add-comment">
+            <textarea name="content" placeholder="Add a comment..." required></textarea>
+            <button type="submit">Post Comment</button>
+        </form>
+    </main>
+
+    <%- include("partials/footer") %>
+</body>
+
+<script>
+    function enableEdit(id) {
+        const input = document.getElementById(`input${id}`);
+        const editBtn = document.getElementById(`edit${id}`);
+        const doneBtn = document.getElementById(`done${id}`);
+
+        input.disabled = false;
+        input.focus();
+
+        editBtn.hidden = true;
+        doneBtn.hidden = false;
+    }
+
+    document.querySelectorAll("textarea").forEach(textarea => {
+        const resize = () => {
+            textarea.style.height = "auto";
+            textarea.style.height = textarea.scrollHeight + "px";
+        };
+
+        resize();
+
+        textarea.addEventListener("input", resize);
+    });
+
+</script>

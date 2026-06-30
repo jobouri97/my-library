@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Books</title>
+    <link rel="stylesheet" href="/styles/styles.css">
+</head>
+
+<body>
+    <%- include("partials/header") %>
+        <main>
+            <div class="search-section">
+                <form class="search-form" action="/search" method="POST">
+                    <input type="text" name="query" placeholder="Search books..." autocomplete="off">
+
+                    <button type="submit">
+                        🔍 Search
+                    </button>
+                </form>
+            </div>
+
+            <% if (locals.error) { %>
+                <p class="error-message">
+                    ⚠️ <%= error %>
+                </p>
+                <% } %>
+                    <% if (locals.books) { %>
+                        <div class="books-container">
+
+                            <% books.forEach(book=> { %>
+                                <div class="book-card">
+
+                                    <img class="book-cover"
+                                        src="https://covers.openlibrary.org/b/id/<%= book.cover_i %>-M.jpg"
+                                        alt="<%= book.title %> cover">
+
+                                    <h2 class="book-title">
+                                        <%= book.title %>
+                                    </h2>
+
+                                    <p class="book-author">
+                                        <%= book.author_name?.[0] || "Unknown Author" %>
+                                    </p>
+
+                                    <div></div>
+
+                                    <div class="book-actions">
+                                        <% if (book.isAdded) { %>
+                                            <button class="book-btn" disabled>
+                                                Added
+                                            </button>
+                                            <% } else { %>
+                                                <form action="/add" method="POST" onsubmit="markAsAdded(this)">
+                                                    <input type="hidden" name="title" value="<%= book.title %>">
+                                                    <input type="hidden" name="author"
+                                                        value="<%= book.author_name?.[0] || '' %>">
+                                                    <input type="hidden" name="coverId" value="<%= book.cover_i %>">
+                                                    <button class="book-btn" type="submit">
+                                                        Add
+                                                    </button>
+                                                </form>
+                                                <% } %>
+                                    </div>
+
+                                </div>
+                                <% }) %>
+
+                        </div>
+                        <% } %>
+        </main>
+        <%- include("partials/footer") %>
+
+            <script>
+                function markAsAdded(form) {
+                    const button = form.querySelector("button");
+
+                    button.textContent = "Added";
+                    button.disabled = true;
+                }
+            </script>
+</body>
+
+</html>

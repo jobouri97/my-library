@@ -1,0 +1,252 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", "Segoe UI", sans-serif;
+  background: linear-gradient(135deg, #f8fafc, #eef2ff);
+  color: #1f2937;
+}
+.back-link {
+  display: inline-flex;
+  align-items: center;
+
+  width: fit-content;
+  padding: 0.6rem 1rem;
+
+  margin: 1.5rem 0 0 1.5rem;
+
+  text-decoration: none;
+  color: #374151;
+  background: white;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.95rem;
+
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: 0.25s;
+}
+.back-link:hover {
+  transform: translateX(-4px);
+  background: #111827;
+  color: white;
+}
+
+.comments-page {
+  width: min(92%, 900px);
+  margin: 2rem auto 4rem;
+}
+
+.book-info {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  background: rgba(255, 255, 255, 0.85);
+  padding: 2rem;
+  border-radius: 28px;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.book-info img {
+  width: 130px;
+  height: 190px;
+  object-fit: cover;
+  border-radius: 18px;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.2);
+}
+
+.book-info h1 {
+  margin: 0;
+  font-size: clamp(1.7rem, 4vw, 2.7rem);
+  color: #111827;
+}
+
+.book-info h3 {
+  margin-top: 0.7rem;
+  font-size: 1.1rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.comments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.comment-card {
+  background: white;
+  border-radius: 22px;
+  padding: 1.2rem;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.07);
+  border: 1px solid rgba(229, 231, 235, 0.9);
+}
+
+.comment-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+textarea {
+  width: 100%;
+  resize: none;
+  border: none;
+  outline: none;
+  background: #f9fafb;
+  border-radius: 16px;
+  padding: 1rem;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #374151;
+  font-family: inherit;
+}
+
+textarea:disabled {
+  color: #374151;
+  opacity: 1;
+  cursor: default;
+}
+
+textarea:focus {
+  background: white;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.18);
+}
+
+.comment-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+
+.comment-buttons button,
+.add-comment button {
+  border: none;
+  border-radius: 999px;
+  padding: 0.75rem 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+.edit-btn {
+  background: #eef2ff;
+  color: #4338ca;
+}
+
+.done-btn {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.delete-btn {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.comment-buttons button:hover,
+.add-comment button:hover {
+  transform: translateY(-2px);
+}
+
+.add-comment {
+  margin-top: 2rem;
+  background: #111827;
+  padding: 1.3rem;
+  border-radius: 24px;
+  box-shadow: 0 18px 40px rgba(17, 24, 39, 0.25);
+  display: flex;
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.add-comment textarea {
+  min-height: 56px;
+  background: white;
+}
+
+.add-comment button {
+  background: #6366f1;
+  color: white;
+  min-width: 150px;
+}
+
+.add-comment button:hover {
+  background: #4f46e5;
+}
+
+@media (max-width: 700px) {
+  .back-link {
+    margin-left: 1rem;
+  }
+
+  .book-info {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .add-comment {
+    flex-direction: column;
+  }
+
+  .add-comment button {
+    width: 100%;
+  }
+
+  .comment-buttons {
+    justify-content: center;
+  }
+
+  
+}
+
+@media (max-width: 700px) {
+  .comments-page {
+    width: 100%;
+    padding: 0 1rem;
+  }
+
+  .book-info,
+  .comment-card,
+  .add-comment {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .book-info {
+    padding: 1.2rem;
+  }
+
+  .comment-buttons {
+    flex-direction: column;
+  }
+
+  .comment-buttons button {
+    width: 100%;
+  }
+
+  .add-comment {
+    flex-direction: column;
+    align-items: stretch;
+    background: #111827;
+  }
+
+  .add-comment textarea,
+  .add-comment button {
+    width: 100%;
+  }
+
+  textarea {
+    min-width: 0;
+    overflow-wrap: break-word;
+  }
+}
