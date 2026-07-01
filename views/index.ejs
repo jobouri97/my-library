@@ -15,51 +15,58 @@
             <a href="/?sort=rating" class="<%= sort === 'rating' ? 'active' : '' %>">Rating</a>
             <a href="/?sort=title" class="<%= sort === 'title' ? 'active' : '' %>">A-Z</a>
         </div>
-        <div class="books-container">
-            <% books.forEach(book=> { %>
-                <div class="book-card">
+        <% if (books.length===0) { %>
+            <div class="empty-state">
+                <h2>📚 No books yet</h2>
+                <p>Click on <strong>New Books</strong> to add books to your library.</p>
+            </div>
+            <% } else { %>
+                <div class="books-container">
+                    <% books.forEach(book=> { %>
+                        <div class="book-card">
 
-                    <img class="book-cover" src="https://covers.openlibrary.org/b/id/<%= book.cover_id %>-M.jpg"
-                        alt="<%= book.title %> cover">
+                            <img class="book-cover" src="https://covers.openlibrary.org/b/id/<%= book.cover_id %>-M.jpg"
+                                alt="<%= book.title %> cover">
 
-                    <div class="book-title">
-                        <h2>
-                            <%= book.title %>
-                        </h2>
-                    </div>
+                            <div class="book-title">
+                                <h2>
+                                    <%= book.title %>
+                                </h2>
+                            </div>
 
-                    <p class="book-author">
-                        <%= book.author %>
-                    </p>
+                            <p class="book-author">
+                                <%= book.author %>
+                            </p>
 
-                    <div class="book-rating">
-                        <% for (let i=1; i <=5; i++) { %>
-                            <form action="/rate/<%= book.id %>" method="POST">
-                                <input type="hidden" name="rating" value="<%= i %>">
+                            <div class="book-rating">
+                                <% for (let i=1; i <=5; i++) { %>
+                                    <form action="/rate/<%= book.id %>" method="POST">
+                                        <input type="hidden" name="rating" value="<%= i %>">
 
-                                <button type="submit" class="star-btn">
-                                    <%= i <=book.rating ? "⭐" : "☆" %>
-                                </button>
-                            </form>
-                            <% } %>
-                    </div>
+                                        <button type="submit" class="star-btn">
+                                            <%= i <=book.rating ? "⭐" : "☆" %>
+                                        </button>
+                                    </form>
+                                    <% } %>
+                            </div>
 
-                    <div class="book-actions">
-                        <a href="/comments/<%= book.id %>" class="comment-btn">
-                            💬 Comments
-                        </a>
+                            <div class="book-actions">
+                                <a href="/comments/<%= book.id %>" class="comment-btn">
+                                    💬 Comments
+                                </a>
 
-                        <form action="/delete/<%= book.id %>" method="post">
-                            <button class="delete-btn">
-                                🗑 Delete
-                            </button>
-                        </form>
-                    </div>
+                                <form action="/delete/<%= book.id %>" method="post">
+                                    <button class="delete-btn">
+                                        🗑 Delete
+                                    </button>
+                                </form>
+                            </div>
 
+                        </div>
+                        <% }) %>
                 </div>
-                <% }) %>
-        </div>
-        <%- include("partials/footer") %>
+                <% } %>
+                    <%- include("partials/footer") %>
 
 </body>
 

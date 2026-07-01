@@ -364,3 +364,65 @@ body {
     transform: translateY(0);
   }
 }
+
+.book-btn {
+  min-width: 120px;
+  padding: 0.8rem 1.6rem;
+  border: none;
+  border-radius: 14px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: white;
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  box-shadow: 0 6px 18px rgba(79, 70, 229, 0.3);
+  transition: all 0.25s ease;
+}
+
+.book-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(79, 70, 229, 0.4);
+}
+
+.book-btn:active {
+  transform: translateY(0);
+}
+
+/* Added button */
+.book-btn:disabled {
+  background: linear-gradient(135deg, #10b981, #34d399);
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.3);
+  cursor: default;
+  opacity: 1;
+}
+
+.book-btn:disabled::before {
+  content: "✓ ";
+}
+
+.empty-state {
+  max-width: 500px;
+  margin: 5rem auto;
+  padding: 3rem 2rem;
+  text-align: center;
+  background: #fff;
+  border-radius: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.empty-state h2 {
+  margin: 0 0 1rem;
+  color: #1f2937;
+  font-size: 2rem;
+}
+
+.empty-state p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.empty-state strong {
+  color: #4f46e5;
+}
