@@ -30,26 +30,30 @@
                 <div class="comment-card">
                     <form class="comment-edit-form" action="/comments/<%= comment.id %>/edit" method="post">
                         <input type="hidden" name="bookId" value="<%= book.id %>">
-                        <p><%=comment.username %></p>
+                        <p class="comment-username">
+                            <%=comment.username %>
+                        </p>
 
                         <textarea id="input<%= comment.id %>" name="content" disabled
                             required><%= comment.comment %></textarea>
 
-                        <div class="comment-buttons">
-                            <button class="edit-btn" id="edit<%= comment.id %>" type="button"
-                                onclick="enableEdit(<%= comment.id %>)">
-                                ✏️ Edit
-                            </button>
+                        <% if (locals.currentUser && currentUser.id == comment.user_id) { %>
+                            <div class="comment-buttons">
+                                <button class="edit-btn" id="edit<%= comment.id %>" type="button"
+                                    onclick="enableEdit(<%= comment.id %>)">
+                                    ✏️ Edit
+                                </button>
 
-                            <button class="done-btn" id="done<%= comment.id %>" type="submit" hidden>
-                                ✅ Save
-                            </button>
+                                <button class="done-btn" id="done<%= comment.id %>" type="submit" hidden>
+                                    ✅ Save
+                                </button>
 
-                            <button class="delete-btn" type="submit" formaction="/comments/<%= comment.id %>/delete"
-                                formmethod="post">
-                                🗑️ Delete
-                            </button>
-                        </div>
+                                <button class="delete-btn" type="submit" formaction="/comments/<%= comment.id %>/delete"
+                                    formmethod="post">
+                                    🗑️ Delete
+                                </button>
+                            </div>
+                            <% } %>
                     </form>
                 </div>
                 <% }) %>

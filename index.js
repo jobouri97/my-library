@@ -1,55 +1,48 @@
 import express from "express";
 import bodyParser from "body-parser";
 import pg from "pg";
-import bcrypt from "bcrypt";
 import passport from "passport";
-import { Strategy } from "passport-local";
 import GoogleStrategy from "passport-google-oauth2";
 import session from "express-session";
 import env from "dotenv";
+import axios from "axios";
 
+//-------------------TAKING OFF-------------------
+
+const port = process.env.PORT || 3000;
 const app = express();
-const port = 3000;
-const saltRounds = 10;
 env.config();
 
 app.use(
     session({
-        secret: "TOPSECRET",
+        secret: process.env.SECRET,
         resave: false,
-        saveUninitialized: true,
+        saveUninitialized: false,
+        cookie: {
+            maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
+        },
     })
 );
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 app.use(passport.initialize());
 app.use(passport.session());
 
-/*const db = new pg.Client({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false,
-  },
-});*/
-
 const db = new pg.Client({
-    user: "postgres",
-    host: "localhost",
-    database: "books",
-    password: "135264",
-    port: 5433,
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+        rejectUnauthorized: false,
+    },
 });
 
 db.connect();
 
-// Middleware
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static("public"));
-
 app.set("view engine", "ejs");
 
-//---------------------------------------------------------------------------------------------------
+//-------------------METHODS-------------------
+
 async function insertBook(title, author, coverId) {
 
     console.log(`${title}
@@ -80,15 +73,13 @@ async function getBooks(sort = "id") {
     return result.rows;
 }
 
-//---------------------------------------------------------------------------------------------------
+//-------------------GET-------------------
 
-// Routes
-app.get("/index", async (req, res) => {
+app.get("/", async (req, res) => {
     if (req.isAuthenticated()) {
         const sort = req.query.sort || "recent";
 
         const books = await getBooks(sort);
-        console.log("User:", req.user);
         res.render("index.ejs", {
             currentPage: "books",
             books,
@@ -100,12 +91,11 @@ app.get("/index", async (req, res) => {
     }
 });
 
-app.get("/", async (req, res) => {
+app.get("/index", async (req, res) => {
     if (req.isAuthenticated()) {
         const sort = req.query.sort || "recent";
 
         const books = await getBooks(sort);
-        console.log("User:", req.user);
         res.render("index.ejs", {
             currentPage: "books",
             books,
@@ -122,8 +112,14 @@ app.get("/auth", async (req, res) => {
 });
 
 app.get("/new", (req, res) => {
-    res.render("new.ejs", { currentPage: "new", });
+    if (req.isAuthenticated()) {
+        res.render("new.ejs", { currentPage: "new" });
+    } else {
+        res.redirect("/auth");
+    }
 });
+
+//-------------------POST-------------------
 
 app.post("/search", async (req, res) => {
     try {
@@ -171,6 +167,7 @@ app.post("/search", async (req, res) => {
     }
 });
 
+//add book 
 app.post("/add", async (req, res) => {
     try {
         const { title, author, coverId } = req.body;
@@ -185,6 +182,7 @@ app.post("/add", async (req, res) => {
     }
 });
 
+//rate book
 app.post("/rate/:id", async (req, res) => {
     const id = req.params.id;
     const rating = req.body.rating;
@@ -197,6 +195,24 @@ app.post("/rate/:id", async (req, res) => {
     res.redirect("/");
 });
 
+//delete a book
+app.post("/delete/:id", async (req, res) => {
+    const bookId = req.params.id;
+
+    await db.query(
+        "DELETE FROM comments WHERE book_id = $1",
+        [bookId]
+    );
+
+    await db.query(
+        "DELETE FROM books WHERE id = $1",
+        [bookId]
+    );
+
+    res.redirect("/");
+});
+
+//get comments for a certain book
 app.get("/comments/:id", async (req, res) => {
     const bookId = req.params.id;
 
@@ -205,6 +221,7 @@ app.get("/comments/:id", async (req, res) => {
             comments.id AS id,
             comments.book_id,
             comments.comment,
+            comments.user_id,
             users.name AS username
         FROM comments
         JOIN users
@@ -223,22 +240,25 @@ app.get("/comments/:id", async (req, res) => {
     res.render("comments.ejs", {
         book: bookResult.rows[0],
         comments: commentsResult.rows,
+        currentUser: req.user
     });
 });
 
+//edit a comment
 app.post("/comments/:id/edit", async (req, res) => {
     const commentId = req.params.id;
     const content = req.body.content;
     const bookId = req.body.bookId;
 
     await db.query(
-        "UPDATE comments SET comment = $1 WHERE id = $2",
-        [content, commentId]
+        "UPDATE comments SET comment = $1 WHERE id = $2 AND user_id = $3",
+        [content, commentId, req.user.id]
     );
 
     res.redirect(`/comments/${bookId}`);
 });
 
+//add a new comment
 app.post("/books/:id/comments", async (req, res) => {
     const bookId = req.params.id;
     const content = req.body.content;
@@ -251,41 +271,25 @@ app.post("/books/:id/comments", async (req, res) => {
     res.redirect(`/comments/${bookId}`);
 });
 
+//delete a comment
 app.post("/comments/:id/delete", async (req, res) => {
     const commentId = req.params.id;
     const bookId = req.body.bookId;
 
     await db.query(
-        "DELETE FROM comments WHERE id = $1",
-        [commentId]
+        "DELETE FROM comments WHERE id = $1 AND user_id = $2",
+        [commentId, req.user.id]
     );
 
     res.redirect(`/comments/${bookId}`);
 });
 
-app.post("/delete/:id", async (req, res) => {
-    const bookId = req.params.id;
-
-    await db.query(
-        "DELETE FROM comments WHERE book_id = $1",
-        [bookId]
-    );
-
-    await db.query(
-        "DELETE FROM books WHERE id = $1",
-        [bookId]
-    );
-
-    res.redirect("/");
-});
-
-//----------------------AUTHENTICATION--------------------\\
+//-------------------AUTHENTICATION-------------------
 app.get(
-  "/auth/google",
-  passport.authenticate("google", {
-    scope: ["profile", "email"],
-    prompt: "select_account",
-  })
+    "/auth/google",
+    passport.authenticate("google", {
+        scope: ["profile", "email"],
+    })
 );
 
 app.get(
@@ -295,20 +299,18 @@ app.get(
         failureRedirect: "/auth",
     })
 );
-app.post("/auth",
-    passport.authenticate("google", {
-        successRedirect: "/index",
-        failureRedirect: "/auth",
-    })
-);
 
-app.get("/logout", (req, res) => {
-  req.logout(function (err) {
-    if (err) {
-      return next(err);
-    }
-    res.redirect("/");
-  });
+app.get("/logout", (req, res, next) => {
+    req.logout(function (err) {
+        if (err) {
+            return next(err);
+        }
+
+        req.session.destroy(() => {
+            res.clearCookie("connect.sid");
+            res.redirect("/auth");
+        });
+    });
 });
 
 passport.use(
@@ -317,7 +319,7 @@ passport.use(
         {
             clientID: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            callbackURL: "http://localhost:3000/auth/google/index",
+            callbackURL: process.env.GOOGLE_CALLBACK_URL,
             userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo",
         },
         async (accessToken, refreshToken, profile, cb) => {
@@ -333,8 +335,6 @@ passport.use(
                     );
                     return cb(null, newUser.rows[0]);
                 } else {
-                    console.log("Here");
-                    console.log(result.rows[0]);
                     return cb(null, result.rows[0]);
                 }
             } catch (err) {
@@ -345,13 +345,18 @@ passport.use(
 );
 
 passport.serializeUser((user, cb) => {
-    cb(null, user);
+    cb(null, user.id);
 });
 
-passport.deserializeUser((user, cb) => {
-    cb(null, user);
+passport.deserializeUser(async (id, cb) => {
+    try {
+        const result = await db.query("SELECT * FROM users WHERE id = $1", [id]);
+        cb(null, result.rows[0]);
+    } catch (err) {
+        cb(err);
+    }
 });
 
 app.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`);
+    console.log(`Server running on ${port}.`);
 });

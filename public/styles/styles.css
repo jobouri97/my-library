@@ -118,7 +118,7 @@ h1 {
   justify-content: center;
 }
 
-.book-title h2 {
+.book-title {
   text-align: center;
   font-size: 1.3rem;
   line-height: 1.4;

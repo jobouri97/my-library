@@ -90,3 +90,14 @@ nav div a.active {
     box-sizing: border-box;
   }
 }
+
+.logout{
+  border-color: red;
+  color: red
+}
+
+.logout:hover{
+  border-color: red;
+  background-color: red;
+  color: white;
+}
