@@ -30,6 +30,7 @@
                 <div class="comment-card">
                     <form class="comment-edit-form" action="/comments/<%= comment.id %>/edit" method="post">
                         <input type="hidden" name="bookId" value="<%= book.id %>">
+                        <p><%=comment.username %></p>
 
                         <textarea id="input<%= comment.id %>" name="content" disabled
                             required><%= comment.comment %></textarea>

@@ -10,6 +10,8 @@
 
 <body>
     <%- include("partials/header") %>
+    <h1> Hello <%=username%> </h1>
+      
         <div class="sort-buttons">
             <a href="/?sort=recent" class="<%= sort === 'recent' ? 'active' : '' %>">Recent</a>
             <a href="/?sort=rating" class="<%= sort === 'rating' ? 'active' : '' %>">Rating</a>
