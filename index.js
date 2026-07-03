@@ -357,6 +357,10 @@ passport.deserializeUser(async (id, cb) => {
     }
 });
 
+app.get("/test-render", (req, res) => {
+    res.send("This is the latest code");
+});
+
 app.listen(port, () => {
     console.log(`Server running on ${port}.`);
 });
